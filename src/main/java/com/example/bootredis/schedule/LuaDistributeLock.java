@@ -40,7 +40,7 @@ public class LuaDistributeLock {
 
             //获取锁失败
             if (!luaRet) {
-                String value = (String) redisService.get(lock);
+                String value = (String) redisService.genValue(lock);
                 //打印当前占用锁的服务器IP
                 logger.info("get lock fail,lock belong to:{}", value);
                 return;

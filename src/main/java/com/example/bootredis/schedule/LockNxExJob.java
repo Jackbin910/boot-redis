@@ -38,11 +38,11 @@ public class LockNxExJob {
         try{
             //redistemplate setnx操作
             boolean nxRet = redisTemplate.opsForValue().setIfAbsent(lock,getHostIp());
-            Object lockValue = redisService.get(lock);
+            Object lockValue = redisService.genValue(lock);
 
             //获取锁失败
             if(!nxRet){
-                String value = (String)redisService.get(lock);
+                String value = (String)redisService.genValue(lock);
                 //打印当前占用锁的服务器IP
                 logger.info("get lock fail,lock belong to:{}",value);
                 return;

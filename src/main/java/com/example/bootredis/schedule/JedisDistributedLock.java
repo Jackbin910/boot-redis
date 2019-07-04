@@ -4,16 +4,17 @@ import com.example.bootredis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisCommands;
 
 import javax.annotation.Resource;
@@ -29,10 +30,12 @@ public class JedisDistributedLock {
 
     private final Logger logger = LoggerFactory.getLogger(JedisDistributedLock.class);
 
-    private static String LOCK_PREFIX = "lua_";
+    private static String LOCK_PREFIX = "JedisDistributedLock_";
+
+    private DefaultRedisScript<Boolean> lockScript;
 
     @Resource
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<Object, Object> redisTemplate;
 
     @Autowired
     private RedisService redisService;
@@ -56,7 +59,6 @@ public class JedisDistributedLock {
 
         String lock = LOCK_PREFIX + "JedisNxExJob";
         boolean lockRet = false;
-
         try {
             lockRet = this.setLock(lock, 600);
 
@@ -77,7 +79,7 @@ public class JedisDistributedLock {
         } finally {
             if (lockRet) {
                 logger.info("jedisLockJob release lock success");
-                redisService.remove(lock);
+                releaseLock(lock,getHostIp());
             }
         }
     }
@@ -88,7 +90,7 @@ public class JedisDistributedLock {
             Boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
                 @Override
                 public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-                    return connection.set(key.getBytes(), "锁定的资源".getBytes(), Expiration.seconds(expire) ,RedisStringCommands.SetOption.ifAbsent());
+                    return connection.set(key.getBytes(), getHostIp().getBytes(), Expiration.seconds(expire) , RedisStringCommands.SetOption.ifAbsent());
                 }
             });
             return result;
@@ -112,40 +114,23 @@ public class JedisDistributedLock {
         return "";
     }
 
-    public boolean releaseLock(String key, String requestId) {
-        // 释放锁的时候，有可能因为持锁之后方法执行时间大于锁的有效期，此时有可能已经被另外一个线程持有锁，所以不能直接删除
-        try {
-            List<String> keys = new ArrayList<>();
-            keys.add(key);
-            List<String> args = new ArrayList<>();
-            args.add(requestId);
-
-            // 使用lua脚本删除redis中匹配value的key，可以避免由于方法执行时间过长而redis锁自动过期失效的时候误删其他线程的锁
-            // spring自带的执行脚本方法中，集群模式直接抛出不支持执行脚本的异常，所以只能拿到原redis的connection来执行脚本
-            RedisCallback<Long> callback = (connection) -> {
-                Object nativeConnection = connection.getNativeConnection();
-                // 集群模式和单机模式虽然执行脚本的方法一样，但是没有共同的接口，所以只能分开执行
-                // 集群模式
-                if (nativeConnection instanceof JedisCluster) {
-                    return (Long) ((JedisCluster) nativeConnection).eval(UNLOCK_LUA, keys, args);
-                }
-
-                // 单机模式
-                else if (nativeConnection instanceof Jedis) {
-                    return (Long) ((Jedis) nativeConnection).eval(UNLOCK_LUA, keys, args);
-                }
-                return 0L;
-            };
-            Long result = redisTemplate.execute(callback);
-
-            return result != null && result > 0;
-        } catch (Exception e) {
-            logger.error("release lock occured an exception", e);
-        } finally {
-            // 清除掉ThreadLocal中的数据，避免内存溢出
-            //lockFlag.remove();
-        }
-        return false;
+    /**
+     * 释放锁操作
+     * @param key
+     * @param value
+     * @return
+     */
+    private boolean releaseLock(String key, String value) {
+        lockScript = new DefaultRedisScript<Boolean>();
+        lockScript.setScriptSource(
+                new ResourceScriptSource(new ClassPathResource("unlock.lua")));
+        lockScript.setResultType(Boolean.class);
+        // 封装参数
+        List<Object> keyList = new ArrayList<Object>();
+        keyList.add(key);
+        keyList.add(value);
+        Boolean result = (Boolean) redisTemplate.execute(lockScript, keyList);
+        return result;
     }
 
     /**

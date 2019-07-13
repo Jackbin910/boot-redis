@@ -4,11 +4,10 @@ import com.example.bootredis.domain.RedPacketRecord;
 import com.example.bootredis.domain.RedPacketRecordExample;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+@Mapper
 public interface RedPacketRecordMapper {
     @SelectProvider(type=RedPacketRecordSqlProvider.class, method="countByExample")
     long countByExample(RedPacketRecordExample example);

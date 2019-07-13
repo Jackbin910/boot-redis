@@ -30,7 +30,7 @@ public class LuaDistributeLock {
     private RedisTemplate redisTemplate;
     private DefaultRedisScript<Boolean> lockScript;
 
-    @Scheduled(cron = "0/10 * * * * *")
+    //@Scheduled(cron = "0/10 * * * * *")
     public void lockJob() {
         String lock = LOCK_PREFIX + "LockNxExJob";
         boolean luaRet = false;

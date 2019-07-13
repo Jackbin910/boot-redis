@@ -17,7 +17,7 @@ spring:
     username: root
     password: Jackbin91**
     type: com.alibaba.druid.pool.DruidDataSource
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     minIdle: 5
     maxActive: 100
     initialSize: 10

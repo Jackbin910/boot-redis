@@ -241,6 +241,26 @@ public class RedisService {
     }
 
 
+    /**
+     * 写入缓存
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean decr(final String key, int value) {
+        boolean result = false;
+        try {
+            ValueOperations<Serializable, Object> operations = redisTemplate.opsForValue();
+            operations.decrement(key, value);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
     //第一次加载的时候将数据加载到redis中
     public void saveDataToRedis(String name) {
         double index = Math.abs(name.hashCode() % size);

@@ -2,18 +2,13 @@ package com.example.bootredis.mapper;
 
 import com.example.bootredis.domain.RedPacketInfo;
 import com.example.bootredis.domain.RedPacketInfoExample;
-import java.util.List;
-import org.apache.ibatis.annotations.DeleteProvider;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.SelectProvider;
-import org.apache.ibatis.annotations.UpdateProvider;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
+@Repository
 public interface RedPacketInfoMapper {
     @SelectProvider(type=RedPacketInfoSqlProvider.class, method="countByExample")
     long countByExample(RedPacketInfoExample example);

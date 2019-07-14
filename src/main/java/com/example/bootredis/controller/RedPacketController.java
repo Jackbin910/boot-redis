@@ -2,9 +2,9 @@ package com.example.bootredis.controller;
 
 import com.example.bootredis.RedisService;
 import com.example.bootredis.domain.RedPacketInfo;
-import com.example.bootredis.domain.RedPacketRecord;
 import com.example.bootredis.mapper.RedPacketInfoMapper;
 import com.example.bootredis.mapper.RedPacketRecordMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,6 +24,10 @@ public class RedPacketController {
 
     @Autowired
     private RedPacketRecordMapper redPacketRecordMapper;
+
+    private static final String TOTAL_NUM = "_totalNum";
+    private static final String TOTAL_AMOUNT= "_totalAmount";
+
 
     @ResponseBody
     @RequestMapping("/addPacket")
@@ -47,15 +51,22 @@ public class RedPacketController {
 
     @ResponseBody
     @RequestMapping("/getPacket")
-    public String getRedPacket(int uid,long redPacketId) {
-        RedPacketRecord redPacketRecord = new RedPacketRecord();
-        redPacketRecord.setUid(uid);
-        redPacketRecord.setRedPacketId(redPacketId);
-        redPacketRecord.setAmount(1111);
-        redPacketRecord.setCreateTime(new Date());
-        redPacketRecordMapper.insertSelective(redPacketRecord);
-        redisService.decr(redPacketId + "_totalNum", 1);
-        return "success";
+    public Integer getRedPacket(long redPacketId) {
+        String redPacketName = redPacketId + TOTAL_NUM;
+        String num = (String) redisService.get(redPacketName);
+        if (StringUtils.isNotBlank(num)) {
+            return Integer.parseInt(num);
+        }
+        return 0;
     }
+
+//    RedPacketRecord redPacketRecord = new RedPacketRecord();
+//        redPacketRecord.setUid(uid);
+//        redPacketRecord.setRedPacketId(redPacketId);
+//        redPacketRecord.setAmount(1111);
+//        redPacketRecord.setCreateTime(new Date());
+//        redPacketRecordMapper.insertSelective(redPacketRecord);
+//        redisService.decr(redPacketId + "_totalNum", 1);
+//        return "success";
 
 }

@@ -2,6 +2,7 @@ package com.example.bootredis.controller;
 
 import com.example.bootredis.RedisService;
 import com.example.bootredis.domain.RedPacketInfo;
+import com.example.bootredis.domain.RedPacketRecord;
 import com.example.bootredis.mapper.RedPacketInfoMapper;
 import com.example.bootredis.mapper.RedPacketRecordMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -60,13 +61,37 @@ public class RedPacketController {
         return 0;
     }
 
-//    RedPacketRecord redPacketRecord = new RedPacketRecord();
-//        redPacketRecord.setUid(uid);
-//        redPacketRecord.setRedPacketId(redPacketId);
-//        redPacketRecord.setAmount(1111);
-//        redPacketRecord.setCreateTime(new Date());
-//        redPacketRecordMapper.insertSelective(redPacketRecord);
-//        redisService.decr(redPacketId + "_totalNum", 1);
-//        return "success";
+    @ResponseBody
+    @RequestMapping("/getRedPacketMoney")
+    public String getRedPacketMoney(int uid ,long redPacketId) {
+        Integer randomAmount = 0;
+        String redPacketName = redPacketId + TOTAL_NUM;
+        String totalAmountName = redPacketId + TOTAL_AMOUNT;
+        String num = (String) redisService.get(redPacketName);
+        if (StringUtils.isBlank(num) || Integer.parseInt(num) == 0) {
+            return "红包已经被抢完";
+        }
+        String totalAmount = (String) redisService.get(totalAmountName);
+        if (StringUtils.isNotBlank(totalAmount)) {
+            Integer totalAmountInt = Integer.parseInt(totalAmount);
+            Integer maxMoney = totalAmountInt / Integer.parseInt(num) * 2;
+            Random random = new Random();
+            randomAmount = random.nextInt(maxMoney);
+        }
+        redisService.decr(redPacketName, 1);
+        redisService.decr(totalAmountName, randomAmount);
+        updatePacketInDB(uid, redPacketId, randomAmount);
+        return randomAmount + "";
+    }
+
+    public void updatePacketInDB(int uid , long redPacketId , int amount) {
+        RedPacketRecord redPacketRecord = new RedPacketRecord();
+        redPacketRecord.setUid(uid);
+        redPacketRecord.setRedPacketId(redPacketId);
+        redPacketRecord.setAmount(1111);
+        redPacketRecord.setCreateTime(new Date());
+        redPacketRecordMapper.insertSelective(redPacketRecord);
+        redisService.decr(redPacketId + "_totalNum", 1);
+    }
 
 }

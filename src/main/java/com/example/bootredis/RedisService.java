@@ -1,10 +1,14 @@
 package com.example.bootredis;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +23,8 @@ public class RedisService {
     private RedisTemplate redisTemplate;
 
     private static double size = Math.pow(2, 32);
+
+    private static final String bloomFilterName = "isVipBloom";
 
 
     /**
@@ -363,4 +369,35 @@ public class RedisService {
         return ret;
     }
 
+    /***
+     *
+     * @param value
+     * @return
+     */
+    public Boolean bloomFilterAdd(int value) {
+        DefaultRedisScript<Boolean> bloomAdd = new DefaultRedisScript<>();
+        bloomAdd.setScriptSource(new ResourceScriptSource(new ClassPathResource("bloomFilterAdd.lua")));
+        bloomAdd.setResultType(Boolean.class);
+        List<Object> keyList = new ArrayList<>();
+        keyList.add(bloomFilterName);
+        keyList.add(value + "");
+        Boolean result = (Boolean) redisTemplate.execute(bloomAdd,keyList);
+        return result;
+    }
+
+    /***
+     *
+     * @param value
+     * @return
+     */
+    public Boolean bloomFilterExists(int value) {
+        DefaultRedisScript<Boolean> bloomExists = new DefaultRedisScript<>();
+        bloomExists.setScriptSource(new ResourceScriptSource(new ClassPathResource("bloomFilterExists.lua")));
+        bloomExists.setResultType(Boolean.class);
+        List<Object> keyList = new ArrayList<>();
+        keyList.add(bloomFilterName);
+        keyList.add(value + "");
+        Boolean result = (Boolean) redisTemplate.execute(bloomExists,keyList);
+        return result;
+    }
 }

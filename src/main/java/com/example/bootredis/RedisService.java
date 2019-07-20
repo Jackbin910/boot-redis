@@ -392,7 +392,7 @@ public class RedisService {
      */
     public Boolean bloomFilterExists(int value) {
         DefaultRedisScript<Boolean> bloomExists = new DefaultRedisScript<>();
-        bloomExists.setScriptSource(new ResourceScriptSource(new ClassPathResource("bloomFilterExists.lua")));
+        bloomExists.setScriptSource(new ResourceScriptSource(new ClassPathResource("bloomFilterExist.lua")));
         bloomExists.setResultType(Boolean.class);
         List<Object> keyList = new ArrayList<>();
         keyList.add(bloomFilterName);

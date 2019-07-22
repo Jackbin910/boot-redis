@@ -8,64 +8,64 @@ import org.apache.ibatis.type.JdbcType;
 import java.util.List;
 
 public interface SysUserMapper {
-    @SelectProvider(type=SysUserSqlProvider.class, method="countByExample")
+    @SelectProvider(type = SysUserSqlProvider.class, method = "countByExample")
     int countByExample(SysUserExample example);
 
-    @DeleteProvider(type=SysUserSqlProvider.class, method="deleteByExample")
+    @DeleteProvider(type = SysUserSqlProvider.class, method = "deleteByExample")
     int deleteByExample(SysUserExample example);
 
     @Delete({
-        "delete from sys_user",
-        "where id = #{id,jdbcType=INTEGER}"
+            "delete from sys_user",
+            "where id = #{id,jdbcType=INTEGER}"
     })
     int deleteByPrimaryKey(Integer id);
 
     @Insert({
-        "insert into sys_user (user_name, image)",
-        "values (#{userName,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR})"
+            "insert into sys_user (user_name, image)",
+            "values (#{userName,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR})"
     })
-    @Options(useGeneratedKeys=true,keyProperty="id")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(SysUser record);
 
-    @InsertProvider(type=SysUserSqlProvider.class, method="insertSelective")
-    @Options(useGeneratedKeys=true,keyProperty="id")
+    @InsertProvider(type = SysUserSqlProvider.class, method = "insertSelective")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertSelective(SysUser record);
 
-    @SelectProvider(type=SysUserSqlProvider.class, method="selectByExample")
+    @SelectProvider(type = SysUserSqlProvider.class, method = "selectByExample")
     @Results({
-        @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
-        @Result(column="user_name", property="userName", jdbcType=JdbcType.VARCHAR),
-        @Result(column="image", property="image", jdbcType=JdbcType.VARCHAR)
+            @Result(column = "id", property = "id", jdbcType = JdbcType.INTEGER, id = true),
+            @Result(column = "user_name", property = "userName", jdbcType = JdbcType.VARCHAR),
+            @Result(column = "image", property = "image", jdbcType = JdbcType.VARCHAR)
     })
     List<SysUser> selectByExample(SysUserExample example);
 
     @Select({
-        "select",
-        "id, user_name, image",
-        "from sys_user",
-        "where id = #{id,jdbcType=INTEGER}"
+            "select",
+            "id, user_name, image",
+            "from sys_user",
+            "where id = #{id,jdbcType=INTEGER}"
     })
     @Results({
-        @Result(column="id", property="id", jdbcType=JdbcType.INTEGER, id=true),
-        @Result(column="user_name", property="userName", jdbcType=JdbcType.VARCHAR),
-        @Result(column="image", property="image", jdbcType=JdbcType.VARCHAR)
+            @Result(column = "id", property = "id", jdbcType = JdbcType.INTEGER, id = true),
+            @Result(column = "user_name", property = "userName", jdbcType = JdbcType.VARCHAR),
+            @Result(column = "image", property = "image", jdbcType = JdbcType.VARCHAR)
     })
     SysUser selectByPrimaryKey(Integer id);
 
-    @UpdateProvider(type=SysUserSqlProvider.class, method="updateByExampleSelective")
+    @UpdateProvider(type = SysUserSqlProvider.class, method = "updateByExampleSelective")
     int updateByExampleSelective(@Param("record") SysUser record, @Param("example") SysUserExample example);
 
-    @UpdateProvider(type=SysUserSqlProvider.class, method="updateByExample")
+    @UpdateProvider(type = SysUserSqlProvider.class, method = "updateByExample")
     int updateByExample(@Param("record") SysUser record, @Param("example") SysUserExample example);
 
-    @UpdateProvider(type=SysUserSqlProvider.class, method="updateByPrimaryKeySelective")
+    @UpdateProvider(type = SysUserSqlProvider.class, method = "updateByPrimaryKeySelective")
     int updateByPrimaryKeySelective(SysUser record);
 
     @Update({
-        "update sys_user",
-        "set user_name = #{userName,jdbcType=VARCHAR},",
-          "image = #{image,jdbcType=VARCHAR}",
-        "where id = #{id,jdbcType=INTEGER}"
+            "update sys_user",
+            "set user_name = #{userName,jdbcType=VARCHAR},",
+            "image = #{image,jdbcType=VARCHAR}",
+            "where id = #{id,jdbcType=INTEGER}"
     })
     int updateByPrimaryKey(SysUser record);
 }

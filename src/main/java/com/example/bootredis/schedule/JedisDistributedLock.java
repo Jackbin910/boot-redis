@@ -52,7 +52,6 @@ public class JedisDistributedLock {
         UNLOCK_LUA = sb.toString();
     }
 
-
     //@Scheduled(cron = "0/10 * * * * *")
     public void lockJob() {
 
@@ -78,18 +77,17 @@ public class JedisDistributedLock {
         } finally {
             if (lockRet) {
                 logger.info("jedisLockJob release lock success");
-                releaseLock(lock,getHostIp());
+                releaseLock(lock, getHostIp());
             }
         }
     }
-
 
     public boolean setLock(String key, long expire) {
         try {
             Boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {
                 @Override
                 public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
-                    return connection.set(key.getBytes(), getHostIp().getBytes(), Expiration.seconds(expire) , RedisStringCommands.SetOption.ifAbsent());
+                    return connection.set(key.getBytes(), getHostIp().getBytes(), Expiration.seconds(expire), RedisStringCommands.SetOption.ifAbsent());
                 }
             });
             return result;
@@ -115,6 +113,7 @@ public class JedisDistributedLock {
 
     /**
      * 释放锁操作
+     *
      * @param key
      * @param value
      * @return

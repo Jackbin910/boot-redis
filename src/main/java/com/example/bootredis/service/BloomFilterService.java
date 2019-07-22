@@ -24,14 +24,14 @@ public class BloomFilterService {
      * 程序启动时加载此方法
      */
     @PostConstruct
-    public void initBloomFilter(){
+    public void initBloomFilter() {
         SysUserExample sysUserExample = new SysUserExample();
         List<SysUser> sysUserList = sysUserMapper.selectByExample(sysUserExample);
-        if (CollectionUtils.isEmpty(sysUserList)){
+        if (CollectionUtils.isEmpty(sysUserList)) {
             return;
         }
-        bf = BloomFilter.create(Funnels.integerFunnel(),sysUserList.size());
-        for (SysUser sysUser : sysUserList){
+        bf = BloomFilter.create(Funnels.integerFunnel(), sysUserList.size());
+        for (SysUser sysUser : sysUserList) {
             bf.put(sysUser.getId());
         }
 
@@ -42,7 +42,7 @@ public class BloomFilterService {
      * @param id
      * @return
      */
-    public boolean userIdExists(int id){
+    public boolean userIdExists(int id) {
         return bf.mightContain(id);
     }
 }

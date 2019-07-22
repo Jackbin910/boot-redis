@@ -4,8 +4,10 @@ import com.example.bootredis.domain.RedPacketInfo;
 import com.example.bootredis.domain.RedPacketInfoExample.Criteria;
 import com.example.bootredis.domain.RedPacketInfoExample.Criterion;
 import com.example.bootredis.domain.RedPacketInfoExample;
+
 import java.util.List;
 import java.util.Map;
+
 import org.apache.ibatis.jdbc.SQL;
 
 public class RedPacketInfoSqlProvider {
@@ -27,39 +29,39 @@ public class RedPacketInfoSqlProvider {
     public String insertSelective(RedPacketInfo record) {
         SQL sql = new SQL();
         sql.INSERT_INTO("red_packet_info");
-        
+
         if (record.getRedPacketId() != null) {
             sql.VALUES("red_packet_id", "#{redPacketId,jdbcType=BIGINT}");
         }
-        
+
         if (record.getTotalAmount() != null) {
             sql.VALUES("total_amount", "#{totalAmount,jdbcType=INTEGER}");
         }
-        
+
         if (record.getTotalPacket() != null) {
             sql.VALUES("total_packet", "#{totalPacket,jdbcType=INTEGER}");
         }
-        
+
         if (record.getRemainingAmount() != null) {
             sql.VALUES("remaining_amount", "#{remainingAmount,jdbcType=INTEGER}");
         }
-        
+
         if (record.getRemainingPacket() != null) {
             sql.VALUES("remaining_packet", "#{remainingPacket,jdbcType=INTEGER}");
         }
-        
+
         if (record.getUid() != null) {
             sql.VALUES("uid", "#{uid,jdbcType=INTEGER}");
         }
-        
+
         if (record.getCreateTime() != null) {
             sql.VALUES("create_time", "#{createTime,jdbcType=TIMESTAMP}");
         }
-        
+
         if (record.getUpdateTime() != null) {
             sql.VALUES("update_time", "#{updateTime,jdbcType=TIMESTAMP}");
         }
-        
+
         return sql.toString();
     }
 
@@ -80,57 +82,57 @@ public class RedPacketInfoSqlProvider {
         sql.SELECT("update_time");
         sql.FROM("red_packet_info");
         applyWhere(sql, example, false);
-        
+
         if (example != null && example.getOrderByClause() != null) {
             sql.ORDER_BY(example.getOrderByClause());
         }
-        
+
         return sql.toString();
     }
 
     public String updateByExampleSelective(Map<String, Object> parameter) {
         RedPacketInfo record = (RedPacketInfo) parameter.get("record");
         RedPacketInfoExample example = (RedPacketInfoExample) parameter.get("example");
-        
+
         SQL sql = new SQL();
         sql.UPDATE("red_packet_info");
-        
+
         if (record.getId() != null) {
             sql.SET("id = #{record.id,jdbcType=INTEGER}");
         }
-        
+
         if (record.getRedPacketId() != null) {
             sql.SET("red_packet_id = #{record.redPacketId,jdbcType=BIGINT}");
         }
-        
+
         if (record.getTotalAmount() != null) {
             sql.SET("total_amount = #{record.totalAmount,jdbcType=INTEGER}");
         }
-        
+
         if (record.getTotalPacket() != null) {
             sql.SET("total_packet = #{record.totalPacket,jdbcType=INTEGER}");
         }
-        
+
         if (record.getRemainingAmount() != null) {
             sql.SET("remaining_amount = #{record.remainingAmount,jdbcType=INTEGER}");
         }
-        
+
         if (record.getRemainingPacket() != null) {
             sql.SET("remaining_packet = #{record.remainingPacket,jdbcType=INTEGER}");
         }
-        
+
         if (record.getUid() != null) {
             sql.SET("uid = #{record.uid,jdbcType=INTEGER}");
         }
-        
+
         if (record.getCreateTime() != null) {
             sql.SET("create_time = #{record.createTime,jdbcType=TIMESTAMP}");
         }
-        
+
         if (record.getUpdateTime() != null) {
             sql.SET("update_time = #{record.updateTime,jdbcType=TIMESTAMP}");
         }
-        
+
         applyWhere(sql, example, true);
         return sql.toString();
     }
@@ -138,7 +140,7 @@ public class RedPacketInfoSqlProvider {
     public String updateByExample(Map<String, Object> parameter) {
         SQL sql = new SQL();
         sql.UPDATE("red_packet_info");
-        
+
         sql.SET("id = #{record.id,jdbcType=INTEGER}");
         sql.SET("red_packet_id = #{record.redPacketId,jdbcType=BIGINT}");
         sql.SET("total_amount = #{record.totalAmount,jdbcType=INTEGER}");
@@ -148,7 +150,7 @@ public class RedPacketInfoSqlProvider {
         sql.SET("uid = #{record.uid,jdbcType=INTEGER}");
         sql.SET("create_time = #{record.createTime,jdbcType=TIMESTAMP}");
         sql.SET("update_time = #{record.updateTime,jdbcType=TIMESTAMP}");
-        
+
         RedPacketInfoExample example = (RedPacketInfoExample) parameter.get("example");
         applyWhere(sql, example, true);
         return sql.toString();
@@ -158,7 +160,7 @@ public class RedPacketInfoSqlProvider {
         if (example == null) {
             return;
         }
-        
+
         String parmPhrase1;
         String parmPhrase1_th;
         String parmPhrase2;
@@ -180,7 +182,7 @@ public class RedPacketInfoSqlProvider {
             parmPhrase3 = "#{oredCriteria[%d].allCriteria[%d].value[%d]}";
             parmPhrase3_th = "#{oredCriteria[%d].allCriteria[%d].value[%d],typeHandler=%s}";
         }
-        
+
         StringBuilder sb = new StringBuilder();
         List<Criteria> oredCriteria = example.getOredCriteria();
         boolean firstCriteria = true;
@@ -192,7 +194,7 @@ public class RedPacketInfoSqlProvider {
                 } else {
                     sb.append(" or ");
                 }
-                
+
                 sb.append('(');
                 List<Criterion> criterions = criteria.getAllCriteria();
                 boolean firstCriterion = true;
@@ -203,14 +205,14 @@ public class RedPacketInfoSqlProvider {
                     } else {
                         sb.append(" and ");
                     }
-                    
+
                     if (criterion.isNoValue()) {
                         sb.append(criterion.getCondition());
                     } else if (criterion.isSingleValue()) {
                         if (criterion.getTypeHandler() == null) {
                             sb.append(String.format(parmPhrase1, criterion.getCondition(), i, j));
                         } else {
-                            sb.append(String.format(parmPhrase1_th, criterion.getCondition(), i, j,criterion.getTypeHandler()));
+                            sb.append(String.format(parmPhrase1_th, criterion.getCondition(), i, j, criterion.getTypeHandler()));
                         }
                     } else if (criterion.isBetweenValue()) {
                         if (criterion.getTypeHandler() == null) {
@@ -241,7 +243,7 @@ public class RedPacketInfoSqlProvider {
                 sb.append(')');
             }
         }
-        
+
         if (sb.length() > 0) {
             sql.WHERE(sb.toString());
         }

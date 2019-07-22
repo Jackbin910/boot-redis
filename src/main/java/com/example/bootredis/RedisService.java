@@ -26,12 +26,11 @@ public class RedisService {
 
     private static final String bloomFilterName = "isVipBloom";
 
-
     /**
      * 写入缓存
      *
      * @param key
-     * @param offset   位 8Bit=1Byte
+     * @param offset 位 8Bit=1Byte
      * @return
      */
     public boolean setBit(String key, long offset, boolean isShow) {
@@ -63,7 +62,6 @@ public class RedisService {
         }
         return result;
     }
-
 
     /**
      * 写入缓存
@@ -131,7 +129,6 @@ public class RedisService {
             remove(key);
         }
     }
-
 
     /**
      * 删除对应的value
@@ -263,7 +260,6 @@ public class RedisService {
         return zset.rangeByScore(key, scoure, scoure1);
     }
 
-
     /**
      * 写入缓存
      *
@@ -283,7 +279,6 @@ public class RedisService {
         return result;
     }
 
-
     //第一次加载的时候将数据加载到redis中
     public void saveDataToRedis(String name) {
         double index = Math.abs(name.hashCode() % size);
@@ -302,23 +297,22 @@ public class RedisService {
     /**
      * 有序集合获取排名
      *
-     * @param key 集合名称
+     * @param key   集合名称
      * @param value 值
      */
     public Long zRank(String key, Object value) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        return zset.rank(key,value);
+        return zset.rank(key, value);
     }
-
 
     /**
      * 有序集合获取排名
      *
      * @param key
      */
-    public Set<ZSetOperations.TypedTuple<Object>> zRankWithScore(String key, long start,long end) {
+    public Set<ZSetOperations.TypedTuple<Object>> zRankWithScore(String key, long start, long end) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<Object>> ret = zset.rangeWithScores(key,start,end);
+        Set<ZSetOperations.TypedTuple<Object>> ret = zset.rangeWithScores(key, start, end);
         return ret;
     }
 
@@ -330,9 +324,8 @@ public class RedisService {
      */
     public Double zSetScore(String key, Object value) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        return zset.score(key,value);
+        return zset.score(key, value);
     }
-
 
     /**
      * 有序集合添加分数
@@ -346,15 +339,14 @@ public class RedisService {
         zset.incrementScore(key, value, scoure);
     }
 
-
     /**
      * 有序集合获取排名
      *
      * @param key
      */
-    public Set<ZSetOperations.TypedTuple<Object>> reverseZRankWithScore(String key, long start,long end) {
+    public Set<ZSetOperations.TypedTuple<Object>> reverseZRankWithScore(String key, long start, long end) {
         ZSetOperations<String, Object> zset = redisTemplate.opsForZSet();
-        Set<ZSetOperations.TypedTuple<Object>> ret = zset.reverseRangeByScoreWithScores(key,start,end);
+        Set<ZSetOperations.TypedTuple<Object>> ret = zset.reverseRangeByScoreWithScores(key, start, end);
         return ret;
     }
 
@@ -381,7 +373,7 @@ public class RedisService {
         List<Object> keyList = new ArrayList<>();
         keyList.add(bloomFilterName);
         keyList.add(value + "");
-        Boolean result = (Boolean) redisTemplate.execute(bloomAdd,keyList);
+        Boolean result = (Boolean) redisTemplate.execute(bloomAdd, keyList);
         return result;
     }
 
@@ -397,7 +389,7 @@ public class RedisService {
         List<Object> keyList = new ArrayList<>();
         keyList.add(bloomFilterName);
         keyList.add(value + "");
-        Boolean result = (Boolean) redisTemplate.execute(bloomExists,keyList);
+        Boolean result = (Boolean) redisTemplate.execute(bloomExists, keyList);
         return result;
     }
 }

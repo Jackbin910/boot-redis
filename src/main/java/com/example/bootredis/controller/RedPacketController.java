@@ -27,12 +27,11 @@ public class RedPacketController {
     private RedPacketRecordMapper redPacketRecordMapper;
 
     private static final String TOTAL_NUM = "_totalNum";
-    private static final String TOTAL_AMOUNT= "_totalAmount";
-
+    private static final String TOTAL_AMOUNT = "_totalAmount";
 
     @ResponseBody
     @RequestMapping("/addPacket")
-    public String saveRedPacket(Integer uid,Integer totalNum, Integer totalAmount) {
+    public String saveRedPacket(Integer uid, Integer totalNum, Integer totalAmount) {
         RedPacketInfo record = new RedPacketInfo();
         record.setUid(uid);
         record.setTotalAmount(totalAmount);
@@ -44,11 +43,10 @@ public class RedPacketController {
         long redPacketId = System.currentTimeMillis(); //此时无法保证唯一，雪花算法生成分布式系统唯一ID
         record.setRedPacketId(redPacketId);
         redPacketInfoMapper.insert(record);
-        redisService.set(redPacketId + "_totalNum", totalNum+"");
-        redisService.set(redPacketId + "_totalAmount", totalAmount+"");
+        redisService.set(redPacketId + "_totalNum", totalNum + "");
+        redisService.set(redPacketId + "_totalAmount", totalAmount + "");
         return "success";
     }
-
 
     @ResponseBody
     @RequestMapping("/getPacket")
@@ -63,7 +61,7 @@ public class RedPacketController {
 
     @ResponseBody
     @RequestMapping("/getRedPacketMoney")
-    public String getRedPacketMoney(int uid ,long redPacketId) {
+    public String getRedPacketMoney(int uid, long redPacketId) {
         Integer randomAmount = 0;
         String redPacketName = redPacketId + TOTAL_NUM;
         String totalAmountName = redPacketId + TOTAL_AMOUNT;
@@ -84,7 +82,7 @@ public class RedPacketController {
         return randomAmount + "";
     }
 
-    public void updatePacketInDB(int uid , long redPacketId , int amount) {
+    public void updatePacketInDB(int uid, long redPacketId, int amount) {
         RedPacketRecord redPacketRecord = new RedPacketRecord();
         redPacketRecord.setUid(uid);
         redPacketRecord.setRedPacketId(redPacketId);

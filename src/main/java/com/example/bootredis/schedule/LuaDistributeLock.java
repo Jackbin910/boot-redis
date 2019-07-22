@@ -36,7 +36,7 @@ public class LuaDistributeLock {
         boolean luaRet = false;
         try {
             //redistemplate setnx操作
-            luaRet = luaExpress(lock,getHostIp());
+            luaRet = luaExpress(lock, getHostIp());
 
             //获取锁失败
             if (!luaRet) {

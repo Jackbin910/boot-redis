@@ -39,7 +39,7 @@ public class Generator {
             line = bufferedReader.readLine();
         }
         String xmlWithParam = buffer.toString();
-        
+
         System.out.println("------- xml config begin -------");
         System.out.println(xmlWithParam);
         System.out.println("------- xml config end -------");
@@ -55,34 +55,37 @@ public class Generator {
             @Override
             public void startTask(String taskName) {
                 /*
-                 * 输出这些信息从而知道 生成那些类了 
-                * Generating Example class for table demo
-                * Generating Primary Key class for table demo 
-                * Generating Record class for table demo 
-                * Generating Mapper Interface for table demo 
-                * Generating SQL Provider for table demo 
-                * Saving file DemoExample.java
-                * Saving file DemoKey.java Saving file Demo.java
-                * Saving file DemoMapper.java
-                * Saving file DemoSqlProvider.java
+                 * 输出这些信息从而知道 生成那些类了
+                 * Generating Example class for table demo
+                 * Generating Primary Key class for table demo
+                 * Generating Record class for table demo
+                 * Generating Mapper Interface for table demo
+                 * Generating SQL Provider for table demo
+                 * Saving file DemoExample.java
+                 * Saving file DemoKey.java Saving file Demo.java
+                 * Saving file DemoMapper.java
+                 * Saving file DemoSqlProvider.java
                  */
                 // System.out.println(taskName);
-                taskNames.add( taskName);
+                taskNames.add(taskName);
             }
 
             @Override
-            public void saveStarted(int arg0) {}
+            public void saveStarted(int arg0) {
+            }
 
             @Override
-            public void introspectionStarted(int arg0) {}
+            public void introspectionStarted(int arg0) {
+            }
 
             @Override
-            public void generationStarted(int arg0) {}
+            public void generationStarted(int arg0) {
+            }
 
             @Override
             public void done() {
-                for(String taskName : taskNames){
-                Matcher matcher = SqlProviderPattern.matcher(taskName);
+                for (String taskName : taskNames) {
+                    Matcher matcher = SqlProviderPattern.matcher(taskName);
                     if (matcher.find()) {
                         final String SqlProviderFilename = matcher.group();
                         System.out.println("处理生成文件,selectByExample  增加mysql分页: " + SqlProviderFilename);
@@ -95,7 +98,7 @@ public class Generator {
                         };
                         boolean done = false;
                         for (Context ctx : contexts) {
-                            if(done){
+                            if (done) {
                                 break;
                             }
                             String targetProject = ctx.getJavaClientGeneratorConfiguration().getTargetProject();
@@ -114,8 +117,8 @@ public class Generator {
                                 }
                             }
                         }
-                        if(!done){
-                             System.out.println("转换失败!!!! selectByExample  增加mysql分页: " + SqlProviderFilename);
+                        if (!done) {
+                            System.out.println("转换失败!!!! selectByExample  增加mysql分页: " + SqlProviderFilename);
                         } else {
                             System.out.println("转换成功!!!! selectByExample  增加mysql分页: " + SqlProviderFilename);
                         }
@@ -124,7 +127,8 @@ public class Generator {
             }
 
             @Override
-            public void checkCancel() throws InterruptedException {}
+            public void checkCancel() throws InterruptedException {
+            }
         };
         myBatisGenerator.generate(cb);
         for (String warning : warnings) {
@@ -154,7 +158,7 @@ public class Generator {
         }
         return sqlString;
          */
-        BufferedReader reader = new BufferedReader( new FileReader(sqlProviderFile));
+        BufferedReader reader = new BufferedReader(new FileReader(sqlProviderFile));
         List<String> lines = IOUtils.readLines(reader);
         reader.close();
         String limitString = "        String sqlString = SQL();\n" +
@@ -167,31 +171,30 @@ public class Generator {
                 "        return sqlString;";
         ArrayList<String> newLines = new ArrayList<String>();
 
-        
-        for (int i=0; i< lines.size();++i) {
+        for (int i = 0; i < lines.size(); ++i) {
             String line = lines.get(i);
-            newLines.add(line );
-            if(line.replaceAll(" ", "") .equalsIgnoreCase("ORDER_BY(example.getOrderByClause());")) {
+            newLines.add(line);
+            if (line.replaceAll(" ", "").equalsIgnoreCase("ORDER_BY(example.getOrderByClause());")) {
                 // 添加下一行大括号和空白行
                 ++i;
                 newLines.add(lines.get(i));
                 ++i;
                 newLines.add(lines.get(i));
-                
+
                 ++i; // 跳过 return SQL();
-                newLines.addAll(Arrays.asList( limitString.split("\n")));
+                newLines.addAll(Arrays.asList(limitString.split("\n")));
             }
         }
-        
+
 //        for (String line : newLines) {
 //            System.out.println(line);
 //        }
         FileOutputStream writer = new FileOutputStream(sqlProviderFile);
-        IOUtils.writeLines(newLines, "\n",writer,"UTF-8");
+        IOUtils.writeLines(newLines, "\n", writer, "UTF-8");
         writer.close();
     }
-    
+
     public static void main(String[] args) throws Exception {
-       new Generator().generate();
+        new Generator().generate();
     }
 }
